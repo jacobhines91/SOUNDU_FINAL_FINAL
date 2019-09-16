@@ -1,4 +1,44 @@
- //  here's the code for the modal 
+function tplawesome(e,t){res=e;for(var n=0;n<t.length;n++){res=res.replace(/\{\{(.*?)\}\}/g,function(e,r){return t[n][r]})}return res}
+
+$(function() {
+    $("form").on("submit", function(e) {
+       e.preventDefault();
+       // prepare the request
+       var request = gapi.client.youtube.search.list({
+            part: "snippet",
+            type: "video",
+            q: encodeURIComponent($("#search").val()).replace(/%20/g, "+"),
+            maxResults: 3,
+            order: "viewCount",
+            publishedAfter: "2015-01-01T00:00:00Z"
+       }); 
+       // execute the request
+       request.execute(function(response) {
+          var results = response.result;
+          $("#results").html("");
+          $.each(results.items, function(index, item) {
+            $.get("tpl/item.html", function(data) {
+                $("#results").append(tplawesome(data, [{"title":item.snippet.title, "videoid":item.id.videoId}]));
+            });
+          });
+          resetVideoHeight();
+       });
+    });
+    
+    $(window).on("resize", resetVideoHeight);
+});
+
+function resetVideoHeight() {
+    $(".video").css("height", $("#results").width() * 9/16);
+}
+
+function init() {
+    gapi.client.setApiKey("AIzaSyBrTnWsxJkc3FQVGAcjmx35dAeP6BjyrSs");
+    gapi.client.load("youtube", "v3", function() {
+        // yt api is ready
+    });
+}
+//  here's the code for the modal 
  
  $(document).ready(function() {
     //Fade in delay for the background overlay (control timing here)
@@ -184,48 +224,48 @@ function callerFunction( )
     );
     }
 //function to do stuff related to Spotify
-function youtubeLogic()
-{
-    // Load the IFrame Player API code asynchronously.
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/player_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+// function youtubeLogic()
+// {
+//     // Load the IFrame Player API code asynchronously.
+//   var tag = document.createElement('script');
+//   tag.src = "https://www.youtube.com/player_api";
+//   var firstScriptTag = document.getElementsByTagName('script')[0];
+//   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-  // Replace the 'ytplayer' element with an <iframe> and
-  // YouTube player after the API code downloads.
-  var player;
-  function onYouTubePlayerAPIReady() {
-    player = new YT.Player('player', {
-      height: '360',
-      width: '640',
-      videoId: 'M7lc1UVf-VE',
-      events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
-      }
-    });
-  }
-  // The API will call this function when the video player is ready.
-  function onPlayerReady(event) {
-    event.target.playVideo();
-  }
+//   // Replace the 'ytplayer' element with an <iframe> and
+//   // YouTube player after the API code downloads.
+//   var player;
+//   function onYouTubePlayerAPIReady() {
+//     player = new YT.Player('player', {
+//       height: '360',
+//       width: '640',
+//       videoId: 'M7lc1UVf-VE',
+//       events: {
+//         'onReady': onPlayerReady,
+//         'onStateChange': onPlayerStateChange
+//       }
+//     });
+//   }
+//   // The API will call this function when the video player is ready.
+//   function onPlayerReady(event) {
+//     event.target.playVideo();
+//   }
 
-  // The API calls this function when the player's state changes.
-  //    The function indicates that when playing a video (state=1),
-  //    the player should play for six seconds and then stop.
-  var done = false;
-  function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING && !done) {
-      setTimeout(stopVideo, 6000);
-      done = true;
-    }
-  }
-  function stopVideo() {
-    player.stopVideo();
-  }
+//   // The API calls this function when the player's state changes.
+//   //    The function indicates that when playing a video (state=1),
+//   //    the player should play for six seconds and then stop.
+//   var done = false;
+//   function onPlayerStateChange(event) {
+//     if (event.data == YT.PlayerState.PLAYING && !done) {
+//       setTimeout(stopVideo, 6000);
+//       done = true;
+//     }
+//   }
+//   function stopVideo() {
+//     player.stopVideo();
+//   }
     
-}
+// }
 
 // styles the search bar...still trying to figure out how to do this 
 
